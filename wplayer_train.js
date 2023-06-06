@@ -1,41 +1,42 @@
-const urlJson = 'URL:Port of the middleware';
 const current = new Date();
 let timing;
 let overviewData = [];
 let x = 0;
-// let direction;
-// let type;
-// let track;
 
 
 //Get Variable Tags from Device
 function getTagsFromScreens() {
 
   const tagtemp = $wp.device.getProperty('variable_tag');
-  //  $wp.utility.log(JSON.stringify(tagtemp));
+  // $wp.utility.log(JSON.stringify(tagtemp));
+  // const data1 = JSON.stringify(tagtemp);
 
-  let direction = tagtemp[0].value; // can be Departres or Arrivals
-  let type = tagtemp[1].value; // can be trackdisplay or overview
-  let track = tagtemp[2].value; // number
 
+  let direction = tagtemp.find(element => element.name === 'station_direction').value; // can be Departures or Arrivals
+  let type = tagtemp.find(element => element.name === 'station_type').value; // can be trackdisplay or overview
+  let track = tagtemp.find(element => element.name === 'station_track').value; // number
+  let url1 = tagtemp.find(element => element.name === 'station_middleware').value;
+  let port1 = tagtemp.find(element => element.name === 'station_middlewareport').value;
+  let urlJson = `http://${url1}:${port1}`;
+ 
+  
   // $wp.utility.log('Track Value :', track);
   $wp.content.getPage('Page1').getElement("Track").setProperty("text", `${track}`);
+  //$wp.content.getPage('Page1').getElement("Destination").setProperty("text",`${urlJson}`);
 
   if (type === 'overview') {
     $wp.content.movePage('Page2');
-    getOverviewData(direction);
+    getOverviewData(direction, urlJson);
   }
 
   if (type === 'trackdisplay') {
     $wp.content.movePage('Page1');
-    getTrackData(track);
-  }
-
-};
-
+    getTrackData(track, urlJson);
+  } 
+}
 
 // get json file and create an array of objects with its elements
-function getTrackData(track) {
+function getTrackData(track, urlJson) {
   const xhr = new XMLHttpRequest();
   xhr.open("GET", `${urlJson}/api/sbb/track/${track}`, true);
 
@@ -91,7 +92,7 @@ function showOverviewData(response) {
   x += 26;
 }
 
-function getOverviewData(dir) {
+function getOverviewData(dir, urlJson) {
   const xhr = new XMLHttpRequest();
   xhr.open("GET", `${urlJson}/api/sbb/direction/${dir}`, true);
   //console.log('OPEN: ', xhr.readyState);
