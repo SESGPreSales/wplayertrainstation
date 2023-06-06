@@ -18,8 +18,8 @@ function getTagsFromScreens() {
   let url1 = tagtemp.find(element => element.name === 'station_middleware').value;
   let port1 = tagtemp.find(element => element.name === 'station_middlewareport').value;
   let urlJson = `http://${url1}:${port1}`;
- 
-  
+
+
   // $wp.utility.log('Track Value :', track);
   $wp.content.getPage('Page1').getElement("Track").setProperty("text", `${track}`);
   //$wp.content.getPage('Page1').getElement("Destination").setProperty("text",`${urlJson}`);
@@ -32,7 +32,7 @@ function getTagsFromScreens() {
   if (type === 'trackdisplay') {
     $wp.content.movePage('Page1');
     getTrackData(track, urlJson);
-  } 
+  }
 }
 
 // get json file and create an array of objects with its elements
@@ -67,6 +67,8 @@ function getTrackData(track, urlJson) {
       $wp.content.getPage('Page1').getElement("Train").setProperty("text", ``);
 
     }
+    else $wp.content.movePage('Page3');
+    //else $wp.content.getPage('Page1').getElement("Destination").setProperty("text", `Waiting for Data`);
   }
 };
 
@@ -83,12 +85,7 @@ function showOverviewData(response) {
       });
     }
   });
-  //clear remaining text values if there are not enough items to be displayed (less than 7)
-  // if (j > 104) {
-  //   for (let i = j; i <= response.length; i++) {
-  //     $wp.content.getPage('Page2').getElement(`Text${i}`).setProperty("text", "");
-  //   }
-  // }
+
   x += 26;
 }
 
@@ -105,7 +102,6 @@ function getOverviewData(dir, urlJson) {
   xhr.onreadystatechange = () => {
     if (xhr.readyState == 4 && xhr.status == 200) {
       response = JSON.parse(xhr.responseText);
-
 
       //console.log('response ', response);
       for (i = 0; i < response.length; i++) {
@@ -127,17 +123,6 @@ function getOverviewData(dir, urlJson) {
         overviewData.push(tempData)
       }
 
-
-
-      // $wp.content.getPage('Page1').getElement("Destination").setProperty("text", `${trackData.train} - ${trackData.destination}`);
-      // $wp.content.getPage('Page1').getElement("Time").setProperty("text", `${newTime}`);
-
-      // if (trackData.diff > 0) { $wp.content.getPage('Page1').getElement("Delay").setProperty("text", `${trackData.diff}`); }
-      // else { $wp.content.getPage('Page1').getElement("Delay").setProperty("text", ``); }
-      // $wp.content.getPage('Page1').getElement("Train").setProperty("text", ``);
-
-
-      //console.log('fullResponse3', fullResponse);
     }
     showOverviewData(overviewData);
   }
@@ -151,11 +136,10 @@ function checkTime(i) {
   return i;
 };
 
-
 function looping() {
   // setTimeout(() => { getTagsFromScreens(), 10000 });
   getTagsFromScreens();
-  timing = setTimeout(looping, 10000)
+  timing = setTimeout(looping, 5000)
 };
 
 
@@ -170,7 +154,7 @@ $wp.setDefaultCallback(function (object) {
         case "play":
           //$wp.utility.log(`ElementHtml get 'play' state`);
           //clearTimeout(timing);
-          //looping()
+          // looping()
           // setTimeout(getTagsFromScreens(), 20000);
           break;
         case "stop":
